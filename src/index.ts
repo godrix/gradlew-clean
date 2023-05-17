@@ -1,53 +1,56 @@
 import fs from 'fs';
 import path from 'path';
-import { exec } from 'child_process';
 import os from 'os';
-import { argv } from 'yargs';
-import {findAndroidFolder} from './utils/findAndroidFolder';
+import { spawn } from 'child_process';
 import log from './utils/log';
+import { findAndroidFolder } from './utils/findAndroidFolder';
 
 export default async function run() {
-  const response = await argv;
+  const args = process.argv;
 
-  const appOptions = ['cleanBuildCache'];
+  const cleanBuildCacheArg = args.find(element => element === '--cleanBuildCache');
 
-  const filteredEntries = Object.entries(response).filter(([key]) => key !== '_' && key !== '$0');
+  const commandGradlew = os.platform() === 'win32' ? `gradlew` : `./gradlew`;
 
-  const aplicationArgs = Object.fromEntries(
-    filteredEntries.filter(([key]) => appOptions.includes(key))
-  ) as { [k: string]: string; }
+  const gradlewAction = cleanBuildCacheArg ? ['cleanBuildCache'] : ['clean'];
 
-  const gradlewCmd = aplicationArgs.cleanBuildCache ? 'cleanBuildCache'  : 'clean';
-
-  
   const currentDirectory = process.cwd();
-  
+
   const androidFolder = findAndroidFolder(currentDirectory);
 
-  const commandCd = os.platform() === 'win32' ? 
-      `cd /d ${androidFolder} && gradlew ${gradlewCmd}` : 
-      `cd ${androidFolder} && ./gradlew ${gradlewCmd}`;
-
   if (fs.existsSync(androidFolder)) {
-
-    const gradlewPath = path.join(androidFolder, 'gradlew'); 
+    const gradlewPath = path.join(androidFolder, 'gradlew');
 
     if (fs.existsSync(gradlewPath)) {
 
-      log.startLoading("Loading");
-      exec(commandCd, (error, stdout, _) => {
-        if (error) {
-          log.error(`Error when executing the internal script: ${error}`);
-          log.stopLoading()
-          return;
+      const childProcess = spawn('cd', [androidFolder], { shell: true });
+
+      childProcess.on('close', (code) => {
+        if (code === 0) {
+          const commandProcess = spawn(commandGradlew, gradlewAction, { cwd: androidFolder });
+
+          commandProcess.stdout.on('data', (data) => {
+            log.info(data.toString());
+          });
+
+          commandProcess.stderr.on('data', (data) => {
+            log.error(data.toString());
+          });
+
+          commandProcess.on('close', (code) => {
+            if(code === 0){
+              log.success(`command ${commandGradlew} ${gradlewAction} finished successfully`);
+            }else{
+              log.warning(`The command was closed with the code ${code}`);
+            }
+          });
+        } else {
+          log.error(`It was not possible to access the folder ${androidFolder}`);
         }
-        
-        log.stopLoading();
-        log.success(stdout);
-        
       });
+
     } else {
-     log.error('The gradlew file was not found.');
+      log.error('The gradlew file was not found.');
     }
   } else {
     log.error('The Android folder was not found.');

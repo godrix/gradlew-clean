@@ -1,6 +1,6 @@
 {
   "name": "gradlew-clean",
-  "version": "0.2.2",
+  "version": "0.0.0-development",
   "description": "Executes the './gradlew clean' command in the Android folder.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:coverage": "jest --coverage",
-    "semantic-release": "semantic-release --branches main",
+    "semantic-release": "semantic-release",
     "prepublishOnly": "npm run build",
     "prepare": "husky install"
   },
@@ -54,7 +54,6 @@
     "build process"
   ],
   "dependencies": {
-    "yargs": "^17.7.2",
     "chalk": "4.1.2"
   },
   "devDependencies": {

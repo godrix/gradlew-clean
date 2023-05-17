@@ -4,8 +4,23 @@ import log from '../utils/log'
 
 export const findAndroidFolder = (directory: string) => {
   const directoryContent = fs.readdirSync(directory);
+  const gitIgnorePath = path.join(directory, '.gitignore');
+  
+  let ignoredDirectories: string[] = [];
+
+  if (fs.existsSync(gitIgnorePath)) {
+    const gitIgnoreContent = fs.readFileSync(gitIgnorePath, 'utf8');
+    ignoredDirectories = gitIgnoreContent
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#') && !line.startsWith('!'));
+  }
 
   for (const item of directoryContent) {
+    if (ignoredDirectories.includes(item)) {
+      continue;
+    }
+
     const itemPath = path.join(directory, item);
     const stat = fs.statSync(itemPath);
 
