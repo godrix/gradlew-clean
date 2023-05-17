@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import log from '../utils/log'
 
 export const findAndroidFolder = (directory: string) => {
   const directoryContent = fs.readdirSync(directory);
@@ -26,7 +25,6 @@ export const findAndroidFolder = (directory: string) => {
 
     if (stat.isDirectory()) {
       if (item.toLowerCase() === 'android') {
-        log.info(itemPath);
         return itemPath;
       } else {
         const result = findAndroidFolder(itemPath);

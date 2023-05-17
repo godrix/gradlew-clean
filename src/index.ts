@@ -23,6 +23,8 @@ export default async function run() {
 
     if (fs.existsSync(gradlewPath)) {
 
+      log.info(`Found Android Project in ${androidFolder}`)
+
       const childProcess = spawn('cd', [androidFolder], { shell: true });
 
       childProcess.on('close', (code) => {
@@ -30,7 +32,7 @@ export default async function run() {
           const commandProcess = spawn(commandGradlew, gradlewAction, { cwd: androidFolder });
 
           commandProcess.stdout.on('data', (data) => {
-            log.info(data.toString());
+            log.log(data.toString());
           });
 
           commandProcess.stderr.on('data', (data) => {
@@ -39,7 +41,7 @@ export default async function run() {
 
           commandProcess.on('close', (code) => {
             if(code === 0){
-              log.success(`command ${commandGradlew} ${gradlewAction} finished successfully`);
+              log.success(`${commandGradlew} ${gradlewAction} finished successfully`);
             }else{
               log.warning(`The command was closed with the code ${code}`);
             }

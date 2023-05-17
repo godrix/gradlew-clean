@@ -36,10 +36,9 @@ But now you can simply instruct users to run `npx gradlew-clean`.
 
 This package will do the following:
 
-- If not then it'll try to install CocoaPods CLI, first with gem, then with homebrew.
-- Check if there is an Android project in the current directory
+- Check if there is an Android project in the project
 - If not then it'll try again in `android/` directories (if any exists).
-- Run `gradlew-clean`
+- Run `gradlew clean`
 
 ## ⚙️ Options
 

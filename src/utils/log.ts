@@ -2,26 +2,29 @@ import chalk from 'chalk';
 
 class Log{
 
-  log:(message:string)=>void;
+  logger:(message:string)=>void;
   intervalId:any;
 
   constructor() {
-    this.log = console.log;
+    this.logger = console.log;
     this.intervalId
   }
   
 
+  log(message:string){
+    this.logger(message);
+  }
   info(message:string){
-    this.log(chalk.blue('ℹ') + " " + chalk.dim(message));
+    this.logger(chalk.blue('ℹ') + " " + chalk.dim(message));
   }
   success(message:string){
-    this.log(chalk.green('✔') + " " + chalk.dim(message));
+    this.logger(chalk.green('✔') + " " + chalk.dim(message));
   }
   warning(message:string){
-    this.log(chalk.yellow('⚠') + " " + chalk.dim(message));
+    this.logger(chalk.yellow('⚠') + " " + chalk.dim(message));
   }
   error(message:string){
-    this.log(chalk.red('✖') + " " + chalk.dim(message));
+    this.logger(chalk.red('✖') + " " + chalk.dim(message));
   }
 
   startLoading(
